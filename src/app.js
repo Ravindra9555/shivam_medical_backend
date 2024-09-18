@@ -1,32 +1,37 @@
- import express  from  'express';
- import cors from "cors";
- import cookieParser from 'cookie-parser';
-import { ApiResponse } from './utils/ApiResponse.js';
- 
- const app = express();
- app.use(express.static("dist"));
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import { ApiResponse } from "./utils/ApiResponse.js";
 
- app.use(cors());
- app.use(cookieParser());
+const app = express();
+app.use(express.static("dist"));
 
- app.use(express.json({
-    limit:'20kb',
- }))
+app.use(cors());
+app.use(cookieParser());
 
- app.use(express.urlencoded({
+app.use(
+  express.json({
+    limit: "20kb",
+  })
+);
+
+app.use(
+  express.urlencoded({
     extended: true,
-    limit:'20kb',
- }))
+    limit: "20kb",
+  })
+);
 
- app.use(express.static("public"));
+app.use(express.static("public"));
 
-app.get("/",(req, res) => {
-    res.json( new ApiResponse(200, "success", "Api is working fine "));
-})
-
+app.get("/", (req, res) => {
+  res.json(new ApiResponse(200, "success", "Api is working fine "));
+});
 
 import userRoutes from "./routes/user.routes.js"; // Ensure this path is correct
+import ContactUs from "./routes/contact.routes.js";
+
 app.use("/v1/api/users", userRoutes);
+app.use("/v1/api/contact", ContactUs);
 
-
- export {app};
+export { app };

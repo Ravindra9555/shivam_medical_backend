@@ -2,7 +2,7 @@ import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
-import cloudinayUpload from "../utils/cloudnary.js";
+import { cloudinayUpload } from "../utils/cloudnary.js";
 
 const RegisterUser = AsyncHandler(async (req, res) => {
   const { email, password, profilePic, name, role } = req.body;
@@ -17,7 +17,8 @@ const RegisterUser = AsyncHandler(async (req, res) => {
   const imgPath = req.file?.path;
   let imgUrl;
   if (imgPath) {
-    imgUrl = await cloudinayUpload(imgPath);
+    const urlReseult = await cloudinayUpload(imgPath);
+    imgUrl = urlReseult?.url;
   }
 
   const newUser = new User({
@@ -28,7 +29,16 @@ const RegisterUser = AsyncHandler(async (req, res) => {
     role: role,
   });
 
-  await newUser.save();
-  res.json(new ApiResponse(201, "User registered successfully", newUser));
+  const registeredUser = await newUser.save();
+  // check  user is created or not
+  if (!registeredUser) {
+    throw new ApiError(500, "Failed to register user");
+  }
+  const createdUser = await User.findById(registeredUser._id).select(
+    "-password -isActive"
+  );
+
+  // Return the response with user data  with status 201 (Created)  and success message
+  res.json(new ApiResponse(201, "User registered successfully", createdUser));
 });
 export { RegisterUser };
