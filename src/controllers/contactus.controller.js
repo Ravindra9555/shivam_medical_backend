@@ -3,7 +3,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 import { Contact } from "../models/conatctus.model.js"; // Correct the import
 import { sendMail } from "../utils/send.email.js";
-import { json } from "express";
+
+
 const contactUs = AsyncHandler(async (req, res) => {
   const { firstName, lastName, phone, email, message } = req.body;
  console.log(req.body);
@@ -41,6 +42,17 @@ const contactUs = AsyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Message sent successfully", savedContact));
 });
+
+//  GET ALL cONTACT 
+  const GetAllContactUsMessage = AsyncHandler(async(req, res)=>{
+    const AllContactUsMessage =  await Contact.find();
+     if(!AllContactUsMessage){
+      throw new ApiError(404, " No Query Found ");
+
+     }
+     res.status(200).json(new ApiResponse(200, "All Contact Us Message", AllContactUsMessage));
+
+  })
 
 
 const ResolveQuery = AsyncHandler(async (req, res) => {
@@ -103,4 +115,4 @@ const RejectQuery = AsyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, "Contact Rejected successfully", resolvedContact));
   });
   
-export { contactUs, ResolveQuery, RejectQuery };
+export { contactUs, ResolveQuery, RejectQuery ,GetAllContactUsMessage };

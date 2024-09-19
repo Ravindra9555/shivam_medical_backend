@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { ApiResponse } from "./utils/ApiResponse.js";
-
+import { errorHandler } from "./middlewares/errorhandler.middleware.js";
 const app = express();
 app.use(express.static("dist"));
 
@@ -30,8 +30,12 @@ app.get("/", (req, res) => {
 
 import userRoutes from "./routes/user.routes.js"; // Ensure this path is correct
 import ContactUs from "./routes/contact.routes.js";
+import adminRoutes from "./routes/admin.routes.js"; // Ensure this path is correct
 
+app.use("/v1/api/admin", adminRoutes);
 app.use("/v1/api/users", userRoutes);
 app.use("/v1/api/contact", ContactUs);
 
+
+app.use(errorHandler);
 export { app };

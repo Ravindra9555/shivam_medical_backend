@@ -1,0 +1,1 @@
+{"level":"error","message":"Error: Admin not found","method":"POST","stack":"Error: Admin not found\n    at file:///home/ravi/Desktop/Shivam%20Medical%20backend/src/controllers/admin.controller.js:127:13\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","statusCode":404,"timestamp":"2024-09-20 00:05:13","url":"/v1/api/admin/delete"}
