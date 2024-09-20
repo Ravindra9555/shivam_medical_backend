@@ -3,7 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { cloudinayUpload } from "../utils/cloudnary.js";
-
+import { sendResetLink } from "../utils/send.email.js";
+import jwt  from "jsonwebtoken"
 const RegisterUser = AsyncHandler(async (req, res) => {
   const { email, password, profilePic, name, role } = req.body;
   if (!email || !password || !name || !role) {
@@ -53,24 +54,104 @@ const LoginUser = AsyncHandler(async (req, res) => {
   if (!user) {
     throw new ApiError(404, "User not found");
   }
-   // Compare the provided password with the hashed password in the database
-   const isPasswordValid = await user.isPasswordMatched(password);
-   if (!isPasswordValid) {
-     throw new ApiError(401, "Invalid Password");
-   }
- 
+  // Compare the provided password with the hashed password in the database
+  const isPasswordValid = await user.isPasswordMatched(password);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid Password");
+  } // Generate tokens
   const access_token = user.generateAccessToken();
   const refresh_token = user.generateRefreshToken();
-  const logedInuser = await User.findById(user._id).select("-password");
 
+  // Assign the refresh token to the user and save it
+  user.refreshToken = refresh_token;
+  await user.save();
+
+  // Remove sensitive fields from the user object
+  const sanitizedUser = await User.findById(user._id).select("-password");
+
+  // Respond with tokens and user data
   res.status(200).json(
-    new ApiResponse(
-      200,
-      "User logged in successfully",
-      { access_token, refresh_token, user: logedInuser }
-    )
+    new ApiResponse(200, "User logged in successfully", {
+      access_token,
+      refresh_token,
+      user: sanitizedUser,
+    })
   );
-  
 });
 
-export { RegisterUser, LoginUser };
+//  controller for  reset  link
+
+const resetLink = AsyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    throw new ApiError(400, "Email is required");
+  }
+  // find user by email
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  try {
+    // generate reset link
+    const resetToken = user.generateAccessToken();
+
+    // save reset token to refresh token
+    user.refreshToken = resetToken;
+    await user.save();
+
+    // Generate reset link and send it to user email
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+    // send email with reset link
+    await sendResetLink(email, resetUrl);
+    res.status(200).json(new ApiResponse(200, "Reset link sent successfully"));
+    // send reset link to user email
+  } catch (error) {
+    console.error(`Error sending reset link: ${error.message}`);
+    throw new ApiError(500, "Failed to send reset link");
+  }
+});
+
+const changePassword = AsyncHandler(async (req, res) => {
+  const { password, resetToken } = req.body;
+
+  // Check if email and resetToken are provided
+  if (!password || !resetToken) {
+    throw new ApiError(400, "Password and resetToken are required");
+  }
+  // Decode the user information using the reset token (use separate secret)
+  let decodedUser;
+  try {
+    decodedUser = jwt.verify(resetToken, process.env.ACCESS_TOKEN_SECRET); // Use a separate secret for reset tokens
+  } catch (error) {
+    throw new ApiError(400, "Invalid or expired resetToken");
+  }
+   const email = decodedUser.email;
+  // Find user by email
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  //  check for same refresh token  
+   if (user.refreshToken!== resetToken) {
+    throw new ApiError(400, "Invalid or expired resetToken");
+  }
+  
+  // Change the password and save it
+  user.password = password;
+  user.refreshToken = "";
+  await user.save();
+
+  // Return success response
+
+  res.status(200).json(new ApiResponse(200, "Password changed successfully", null));
+});
+
+const getAlluser = AsyncHandler(async(req, res)=>{
+  const AllUser =  await User.find();
+     if(!AllUser){
+      throw new ApiError(404, " No User Found ");
+
+     }
+     res.status(200).json(new ApiResponse(200, "All User", AllUser));
+})
+export { RegisterUser, LoginUser, resetLink , changePassword, getAlluser};

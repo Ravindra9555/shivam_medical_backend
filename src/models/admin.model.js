@@ -10,6 +10,7 @@ const adminSchema = new Schema(
     role: { type: String, required: true, enum: ["admin"] },
     isActive: { type: Boolean, default: true },
     profilePic: { type: String },
+    refreshToken: { type: String },
   },
   { timestamps: true }
 );

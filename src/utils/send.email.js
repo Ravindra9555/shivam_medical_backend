@@ -30,4 +30,28 @@ const sendMail = AsyncHandler(async (name, message, phone, email) => {
   }
 });
 
-export { sendMail };
+ const sendResetLink = AsyncHandler(async(email, resetLink)=>{
+  try {
+
+    const info = await transporter.sendMail({
+      from: `"Shivam Medical" <${process.env.MAILER_EMAIL}>`, // Use your environment variables
+      to:  email, // Example recipient, could be dynamic
+      subject: `Password Reset for ${email}`,
+      html: `
+            <h1>Password Reset</h1>
+            <p>Click on the following link to reset your password:</p>
+            <a href="${resetLink}">Reset Password</a>
+            <p>If you did not request this password reset, please ignore this email.</p>
+            <p>Shivam Medical</p>
+            <p>We are here to help you find the best care for your health.</p>
+            <p>Thank you!</p>
+      `,
+    });
+
+    console.log("Message sent: %s", info.messageId);
+    
+  } catch (error) {
+    console.error(`Error sending mail: ${error.message}`);  
+  }
+ })
+export { sendMail, sendResetLink };
