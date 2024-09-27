@@ -114,5 +114,34 @@ const RejectQuery = AsyncHandler(async (req, res) => {
     // Return success response
     res.status(200).json(new ApiResponse(200, "Contact Rejected successfully", resolvedContact));
   });
+const PendingQuery = AsyncHandler(async (req, res) => {
+    const { id } = req.body;
   
-export { contactUs, ResolveQuery, RejectQuery ,GetAllContactUsMessage };
+    // Check if ID is provided
+    if (!id) {
+      throw new ApiError(400, "Id is required");
+    }
+  
+    // Find the contact by ID
+    const pending = await Contact.findById(id);
+    if (!pending) {
+      throw new ApiError(404, "Contact not found");
+    }
+  
+    // Update the status to "resolved"
+    const pendingContact = await Contact.findByIdAndUpdate(
+      id,
+      { status: "pending" },
+      { new: true } // Return the updated document
+    );
+  
+    // Check if the update was successful
+    if (!pendingContact) {
+      throw new ApiError(500, "Failed to Pending contact");
+    }
+  
+    // Return success response
+    res.status(200).json(new ApiResponse(200, "Contact marked Pending successfully", pendingContact));
+  });
+  
+export { contactUs, ResolveQuery, RejectQuery ,GetAllContactUsMessage , PendingQuery};

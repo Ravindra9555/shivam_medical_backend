@@ -7,7 +7,7 @@ import { cloudinayUpload } from "../utils/cloudnary.js";
 // Register Admin
 const RegisterAdmin = AsyncHandler(async (req, res) => {
   const { name, email, password, role, profilePic } = req.body;
-   console.log(req.body)
+  //  console.log(req.body)
   // Check for required fields
   if (!name || !email || !password || !role) {
     throw new ApiError(400, "All fields are required");
@@ -87,36 +87,33 @@ const GetAllAdminUsers = AsyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, "All Admins", admins));
 });
 
-// make admin inactive  
- const makeAdminInactive = AsyncHandler(async(req, res)=>{
+// Make admin inactive
+const makeAdminInactive = AsyncHandler(async (req, res) => {
+  const { id } = req.body;
 
-     const { id} = req.body;
+  // Check if ID is provided
+  const isAdmin = await Admin.findById(id);
+  if (!isAdmin) {
+      throw new ApiError(404, "Admin not found");
+  }
+  isAdmin.isActive = false;
+  await isAdmin.save();
+  res.status(200).json(new ApiResponse(200, "Admin made inactive successfully", isAdmin));
+});
 
-     // Check if ID is provided
-     const isAdmin= await Admin.findById(id);
-     if(!isAdmin){
-         throw new ApiError(404, "Admin not found");
-     }
-     isAdmin.isActive=false;
-     await isAdmin.save();
-     res.status(200).json(new ApiResponse(200, "Admin made inactive successfully", isAdmin));
+// Make admin active
+const makeAdminActive = AsyncHandler(async (req, res) => {
+  const { id } = req.body;
 
- })
-// make admin inactive  
- const makeAdminActive = AsyncHandler(async(req, res)=>{
-
-     const { id} = req.body;
-
-     // Check if ID is provided
-     const isAdmin= await Admin.findById(id);
-     if(!isAdmin){
-         throw new ApiError(404, "Admin not found");
-     }
-     isAdmin.isActive=true;
-     await isAdmin.save();
-     res.status(200).json(new ApiResponse(200, "Admin made inactive successfully", isAdmin));
-
- })
+  // Check if ID is provided
+  const isAdmin = await Admin.findById(id);
+  if (!isAdmin) {
+      throw new ApiError(404, "Admin not found");
+  }
+  isAdmin.isActive = true;
+  await isAdmin.save();
+  res.status(200).json(new ApiResponse(200, "Admin made active successfully", isAdmin)); // Corrected message
+});
 
  // delete the admin
  const deleteAdmin = AsyncHandler(async (req, res) => {
