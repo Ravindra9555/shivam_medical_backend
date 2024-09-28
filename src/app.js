@@ -31,10 +31,15 @@ app.get("/", (req, res) => {
 import userRoutes from "./routes/user.routes.js"; // Ensure this path is correct
 import ContactUs from "./routes/contact.routes.js";
 import adminRoutes from "./routes/admin.routes.js"; // Ensure this path is correct
+import doctorMasterRoutes  from "./routes/doctor.master.routes.js"
+import AppointmentRoutes from "./routes/appointment.routes.js";
 
 app.use("/v1/api/admin", adminRoutes);
 app.use("/v1/api/users", userRoutes);
 app.use("/v1/api/contact", ContactUs);
+app.use("/v1/api/doctorMaster", doctorMasterRoutes);
+app.use("/v1/api/appointment", AppointmentRoutes);
+
 
 
 app.use(errorHandler);
