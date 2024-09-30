@@ -14,9 +14,8 @@
  };
  
  const addDoctor = AsyncHandler(async (req, res) => {
-
+  
    const { name, specialization, email,phone} = req.body;
-
 //    console.log(req.body); // Log the incoming body to debug
 //    console.log(req.file); // Log the incoming file to debug
  

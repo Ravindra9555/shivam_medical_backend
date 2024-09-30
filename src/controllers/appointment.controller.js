@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { AsyncHandler } from "../utils/AsyncHandler.js";
 
 const createAppointment = AsyncHandler(async (req, res) => {
+    
     const { doctorId, patientId, date, time, comments } = req.body;
     
     // Validate required fields
@@ -62,7 +63,9 @@ const getAllAppointmentbyUserId = AsyncHandler(async (req, res) => {
 // Get all appointments with a specific date for admin
 const getAllAppointmentsByDate = AsyncHandler(async (req, res) => {
     const { date } = req.body;
-
+ console.log(
+    req.body
+ )
     // Check if date is provided
     if (!date) {
         throw new ApiError(400, "Date is required");

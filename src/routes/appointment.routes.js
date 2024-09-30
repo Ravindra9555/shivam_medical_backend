@@ -5,6 +5,6 @@ const router = Router();
 
 router.post("/addAppointment",createAppointment);
 router.get("/getAllAppointments",getAllAppointments);
-router.get("/getAllAppointmentsById",getAllAppointmentbyUserId);
-router.get("/getAllAppointmentsByDate",getAllAppointmentsByDate);
+router.post("/getAllAppointmentsById",getAllAppointmentbyUserId);
+router.post("/getAllAppointmentsByDate",getAllAppointmentsByDate);
 export default router;
