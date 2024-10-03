@@ -20,7 +20,7 @@ const cloudinayUpload = async (localFilePath) => {
     });
     console.log(result.url);
 
-    // fs.unlinkSync(localFilePath);
+    fs.unlinkSync(localFilePath);
     // Delete local file after upload to Cloudinary
     return result;
   } catch (error) {
