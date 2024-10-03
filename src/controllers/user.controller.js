@@ -155,6 +155,23 @@ const changePassword = AsyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Password changed successfully", null));
 });
+ const SearchUser = AsyncHandler( async(req, res)=>{
+  const { keyword } = req.body;
+  if (!keyword) {
+    throw new ApiError(400, "Keyword is required");
+  }
+  const searchResult = await User.find({
+    $or: [
+      { name: { $regex: keyword, $options: "i" } }, // case insensitive search
+      { email: { $regex: keyword, $options: "i" } },
+    ],
+  });
+  if (!searchResult) {
+    throw new ApiError(404, "No User Found ");
+  }
+  res.status(200).json(new ApiResponse(200, "Search Result", searchResult));
+ })
+
 
 const getAlluser = AsyncHandler(async (req, res) => {
   const AllUser = await User.find();
@@ -210,4 +227,4 @@ const deleteUser = AsyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "User deleted successfully", null));
 });
-export { RegisterUser, LoginUser, resetLink, changePassword, getAlluser,makeUserActive, makeUserInactive ,deleteUser };
+export { RegisterUser, LoginUser, resetLink, changePassword, getAlluser,makeUserActive, makeUserInactive ,deleteUser , SearchUser};

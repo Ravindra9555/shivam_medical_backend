@@ -109,6 +109,18 @@
       const activeDoctor = await doctor.save({new: true});
       res.status(200).json(new ApiResponse(200,message, activeDoctor));
    })
-   
 
- export {addDoctor, getAllDoctors, deleteDoctor, makeDocotorActive};
+   const getActiveDoctors = AsyncHandler(async (req, res) => {
+    const activeDoctors = await DoctorMaster.find({ isActive: true });
+  
+    // Log for debugging
+    console.log("Active Doctors: ", activeDoctors);
+  
+    if (activeDoctors.length === 0) {
+      throw new ApiError(404, "No active doctor found");
+    }
+  
+    res.status(200).json(new ApiResponse(200, "Here are the active doctors", activeDoctors));
+  });
+  
+ export {addDoctor, getAllDoctors, deleteDoctor, makeDocotorActive, getActiveDoctors};
