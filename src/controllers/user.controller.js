@@ -6,8 +6,8 @@ import { cloudinayUpload } from "../utils/cloudnary.js";
 import { sendResetLink } from "../utils/send.email.js";
 import jwt from "jsonwebtoken";
 const RegisterUser = AsyncHandler(async (req, res) => {
-  const { email, password, profilePic, name, role } = req.body;
-  if (!email || !password || !name || !role) {
+  const { email, password,  name, role } = req.body;
+  if (!email || !password || !role) {
     throw new ApiError(400, "All fields are required");
   }
   // Perform database operations here
@@ -42,6 +42,25 @@ const RegisterUser = AsyncHandler(async (req, res) => {
   // Return the response with user data  with status 201 (Created)  and success message
   res.json(new ApiResponse(201, "User registered successfully", createdUser));
 });
+  const UpdateUser= AsyncHandler(async(req, res)=>{
+    const { id, name, profilePic, password, email } = req.body;
+    if (!id || !name) {
+      throw new ApiError(400, "User Name  is required");
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { name :name,
+        password :password ,
+        email : email? email : user.email,
+      },
+      { new: true }
+    ).select("-password -isActive");
+
+    if (!updatedUser) {
+      throw new ApiError(404, "User not found");
+    }
+    res.status(200).json(new ApiResponse(200, "User updated successfully", updatedUser));
+  })
 
 // Login User
 const LoginUser = AsyncHandler(async (req, res) => {
