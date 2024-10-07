@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 // user model
 const UserSchema = new Schema(
   {
-    name: { type: String, required: true },
+    name: { type: String,},
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, required: true, enum: ["user", "admin"] },

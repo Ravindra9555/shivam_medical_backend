@@ -5,6 +5,9 @@ import { User } from "../models/user.model.js";
 import { cloudinayUpload } from "../utils/cloudnary.js";
 import { sendResetLink } from "../utils/send.email.js";
 import jwt from "jsonwebtoken";
+ import bcrypt from "bcryptjs";
+
+// Register User
 const RegisterUser = AsyncHandler(async (req, res) => {
   const { email, password,  name, role } = req.body;
   if (!email || !password || !role) {
@@ -42,25 +45,51 @@ const RegisterUser = AsyncHandler(async (req, res) => {
   // Return the response with user data  with status 201 (Created)  and success message
   res.json(new ApiResponse(201, "User registered successfully", createdUser));
 });
-  const UpdateUser= AsyncHandler(async(req, res)=>{
-    const { id, name, profilePic, password, email } = req.body;
-    if (!id || !name) {
-      throw new ApiError(400, "User Name  is required");
-    }
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { name :name,
-        password :password ,
-        email : email? email : user.email,
-      },
-      { new: true }
-    ).select("-password -isActive");
 
-    if (!updatedUser) {
-      throw new ApiError(404, "User not found");
-    }
-    res.status(200).json(new ApiResponse(200, "User updated successfully", updatedUser));
-  })
+
+
+
+const UpdateUser = AsyncHandler(async (req, res) => {
+  const { id, name, profilePic, password, email } = req.body;
+
+  if (!id || !name) {
+    throw new ApiError(400, "User Name is required");
+  }
+
+  const imgPath = req.file?.path;
+  let imgUrl;
+  if (imgPath) {
+    const urlResult = await cloudinayUpload(imgPath);
+    imgUrl = urlResult?.url;
+  }
+
+  // Check if the password is being updated, and if so, hash it
+  let updatedFields = {
+    name: name ? name : User.name,
+    email: email ? email : User.email,
+    profilePic: imgUrl ? imgUrl : User.profilePic,
+  };
+
+  if (password) {
+    // Hash the new password before updating
+    const salt = await bcrypt.genSalt(10); // Generate a salt
+    const hashedPassword = await bcrypt.hash(password, salt); // Hash the password
+    updatedFields.password = hashedPassword; // Add hashed password to the fields to update
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    id,
+    updatedFields,
+    { new: true }
+  ).select("-password");
+
+  if (!updatedUser) {
+    throw new ApiError(404, "User not found");
+  }
+
+  res.status(200).json(new ApiResponse(200, "User updated successfully", updatedUser));
+});
+
 
 // Login User
 const LoginUser = AsyncHandler(async (req, res) => {
@@ -246,4 +275,4 @@ const deleteUser = AsyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "User deleted successfully", null));
 });
-export { RegisterUser, LoginUser, resetLink, changePassword, getAlluser,makeUserActive, makeUserInactive ,deleteUser , SearchUser};
+export { RegisterUser,UpdateUser, LoginUser, resetLink, changePassword, getAlluser,makeUserActive, makeUserInactive ,deleteUser , SearchUser};
