@@ -34,6 +34,7 @@ import adminRoutes from "./routes/admin.routes.js"; // Ensure this path is corre
 import doctorMasterRoutes from "./routes/doctor.master.routes.js";
 import AppointmentRoutes from "./routes/appointment.routes.js";
 import ProductsRoutes from "./routes/product.routes.js";
+import AIroutes  from "./routes/AI.routes.js";
 
 app.use("/v1/api/admin", adminRoutes);
 app.use("/v1/api/users", userRoutes);
@@ -41,6 +42,8 @@ app.use("/v1/api/contact", ContactUs);
 app.use("/v1/api/doctorMaster", doctorMasterRoutes);
 app.use("/v1/api/appointment", AppointmentRoutes);
 app.use("/v1/api/product", ProductsRoutes);
+app.use("/v1/api/googleai", AIroutes);
+
 
 app.use(errorHandler);
 export { app };
