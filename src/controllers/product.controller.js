@@ -106,7 +106,7 @@ const getAllProductsIsListed = AsyncHandler(async (req, res) => {
   }
 
   const pageNo = parseInt(page) || 1;
-  const ProductLimit = parseInt(limit) || 20;
+  const ProductLimit = parseInt(limit) || 8;
 
   // Avoid division by zero if limit is 0
   if (ProductLimit <= 0) {
@@ -295,7 +295,18 @@ const getProductByCategoryAndType = AsyncHandler(async (req, res) => {
   );
 });
 
+ const getProductDetailsById = AsyncHandler(async(req, res)=>{
+  const {productId} = req.query;
+  if(!productId){
+    throw new ApiError(400, "Product ID is required");
+  }
+  const product = await Product.findById(productId);
+  if(!product){
+    throw new ApiError(404, "Product not found");
+  }
+   res.status(200).json( new ApiResponse(200, " Product retrived successfully", product));
 
+ })
 
 export {
   addproduct,
@@ -305,5 +316,6 @@ export {
   unlistProduct,
   deleteproduct,
   updateProduct,
-  getProductByCategoryAndType
+  getProductByCategoryAndType,
+  getProductDetailsById
 };
