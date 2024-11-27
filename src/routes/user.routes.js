@@ -10,7 +10,7 @@ router.post("/update", upload.single("profilePic"), UpdateUser);
 router.post("/login", LoginUser);
 router.post("/resetlink", resetLink);
 router.post("/changepassword", changePassword);
-router.get("/alluser", verifyAdmin, getAlluser);
+router.get("/alluser",  getAlluser);
 router.post("/searchuser", SearchUser);
 router.post("/deleteUser", verifyAdmin, deleteUser);
 router.post("/userinactive", verifyAdmin, makeUserInactive);
