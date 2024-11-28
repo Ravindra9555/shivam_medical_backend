@@ -1,18 +1,30 @@
 import mongoose, { Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-
-// user model
 const UserSchema = new Schema(
   {
-    name: { type: String,},
+    name: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, required: true, enum: ["user", "admin"] },
     isActive: { type: Boolean, default: true },
     profilePic: { type: String },
-    refreshToken:{type: String},
-    shippingAddress: { type: mongoose.Schema.Types.ObjectId, ref: "UserShippingAddress" }
+    refreshToken: { type: String },
+    shippingAddresses: [
+      {
+        fullName: { type: String, required: true },
+        email: { type: String, required: true },
+        address: { type: String, required: true },
+        phone :{ type: String, required: true},
+        streetAddress: { type: String },
+        landmarksAndApartments: { type: String },
+        city: { type: String, required: true },
+        state: { type: String, required: true },
+        zipCode: { type: String, required: true },
+        isDefault: { type: Boolean, default: false },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
   { timestamps: true }
 );

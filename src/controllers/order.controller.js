@@ -64,6 +64,27 @@ const createOrder = AsyncHandler(async (req, res) => {
       throw new ApiError(500, error.message || "Error creating order");
     }
   });
+   const getAllOrderByuserId = AsyncHandler(async (req, res) => {
+    const { userId } = req.body;
+  
+    // Validate if userId is present
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+  
+    try {
+      // Fetpoch all orders for the specified user
+      const orders = await Order.find({ user: userId })
+        // .pulate("user", "name email") // Populate user fields if needed
+        // .populate("shippingAddress") // Populate the shipping address
+        // .populate("products.productId", "name price image"); // Populate product details
+  
+      // Respond with the fetched orders
+      res.status(200).json(orders);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching orders", error });
+    }
+  });
   export {
-    createOrder
+    createOrder, getAllOrderByuserId
   }

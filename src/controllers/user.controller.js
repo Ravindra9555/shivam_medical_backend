@@ -6,6 +6,7 @@ import { cloudinayUpload } from "../utils/cloudnary.js";
 import { sendResetLink } from "../utils/send.email.js";
 import jwt from "jsonwebtoken";
  import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
 
 // Register User
 const RegisterUser = AsyncHandler(async (req, res) => {
@@ -275,4 +276,159 @@ const deleteUser = AsyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, "User deleted successfully", null));
 });
-export { RegisterUser,UpdateUser, LoginUser, resetLink, changePassword, getAlluser,makeUserActive, makeUserInactive ,deleteUser , SearchUser};
+
+const addAddress = AsyncHandler(async (req, res) => {
+  const {
+    userId,
+    fullName,
+    email,
+    address,
+    streetAddress,
+    landmarksAndApartments,
+    city,
+    state,
+    zipCode,
+    isDefault,
+  } = req.body;
+
+  // Validate required fields
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, "Valid userId is required");
+  }
+  if (!fullName || !email || !address || !city || !state || !zipCode) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  // Find the user
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  // If the address is marked as default, reset previous defaults
+  if (isDefault) {
+    user.shippingAddresses.forEach((addr) => (addr.isDefault = false));
+  }
+
+  // Add the new address
+  const newAddress = {
+    fullName,
+    email,
+    address,
+    streetAddress,
+    landmarksAndApartments,
+    city,
+    phone,
+    state,
+    zipCode,
+    isDefault: isDefault || false,
+  };
+  user.shippingAddresses.push(newAddress);
+
+  await user.save();
+
+  res
+    .status(201)
+    .json(new ApiResponse(201, "Address added successfully", newAddress));
+});
+
+const getAddress = AsyncHandler(async (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, "Valid userId is required");
+  }
+
+  // Find the user and retrieve shipping addresses
+  const user = await User.findById(userId, "shippingAddresses");
+  if (!user || user.shippingAddresses.length === 0) {
+    throw new ApiError(404, "No addresses found for this user");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Addresses fetched successfully", user.shippingAddresses));
+});
+
+const updateAddress = AsyncHandler(async (req, res) => {
+  const {
+    userId,
+    addressId,
+    fullName,
+    email,
+    address,
+    streetAddress,
+    landmarksAndApartments,
+    city,
+    state,
+    phone,
+    zipCode,
+    isDefault,
+  } = req.body;
+
+  // Validate required fields
+  if (!userId || !addressId) {
+    throw new ApiError(400, "User ID and Address ID are required");
+  }
+
+  // Find the user
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  // Find the address and update it
+  const newaddress = user.shippingAddresses.id(addressId);
+  if (!newaddress) {
+    throw new ApiError(404, "Address not found");
+  }
+
+  // Update fields
+  if (isDefault) {
+    user.shippingAddresses.forEach((addr) => (addr.isDefault = false));
+  }
+  newaddress.set({
+    fullName,
+    email,
+    address,
+    streetAddress,
+    landmarksAndApartments,
+    city,
+    state,
+    zipCode,
+    phone,
+    isDefault: isDefault || newaddress.isDefault,
+  });
+
+  await user.save();
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Address updated successfully", newaddress));
+});
+
+const deleteAddress = AsyncHandler(async (req, res) => {
+  const { userId, addressId } = req.body;
+
+  // Validate required fields
+  if (!userId || !addressId) {
+    throw new ApiError(400, "User ID and Address ID are required");
+  }
+
+  // Update the user and pull the address
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { $pull: { shippingAddresses: { _id: addressId } } }, // Pulls the matching address by ID
+    { new: true } // Returns the updated user document
+  );
+
+  if (!updatedUser) {
+    throw new ApiError(404, "User not found or address not found");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Address deleted successfully"));
+});
+
+export { RegisterUser,UpdateUser, LoginUser, resetLink, changePassword, getAlluser,makeUserActive, makeUserInactive ,deleteUser , SearchUser, addAddress, getAddress, updateAddress, deleteAddress};
