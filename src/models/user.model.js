@@ -11,7 +11,8 @@ const UserSchema = new Schema(
     role: { type: String, required: true, enum: ["user", "admin"] },
     isActive: { type: Boolean, default: true },
     profilePic: { type: String },
-    refreshToken:{type: String}
+    refreshToken:{type: String},
+    shippingAddress: { type: mongoose.Schema.Types.ObjectId, ref: "UserShippingAddress" }
   },
   { timestamps: true }
 );
