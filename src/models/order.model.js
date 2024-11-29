@@ -8,12 +8,20 @@ const orderSchema = new Schema(
       ref: "UserShippingAddress",
       required: true,
     },
+    address: { type: Object },
+
     products: [
       {
         productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
         name: { type: String, required: true },
+        image: { type: String, required: true },
+        category: { type: String, required: true },
+        type : { type: String, required: true },
+        discount: { type: Number, required: true },
+        mrp: { type: Number, required: true },
+
       },
     ],
     totalPrice: { type: Number, required: true },
@@ -22,7 +30,7 @@ const orderSchema = new Schema(
       enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
       default: "pending",
     },
-   
+
     paymentStatus: {
       type: String,
       enum: ["pending", "success", "failed"],
