@@ -286,6 +286,7 @@ const addAddress = AsyncHandler(async (req, res) => {
     streetAddress,
     landmarksAndApartments,
     city,
+    phone,
     state,
     zipCode,
     isDefault,
@@ -295,7 +296,7 @@ const addAddress = AsyncHandler(async (req, res) => {
   if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
     throw new ApiError(400, "Valid userId is required");
   }
-  if (!fullName || !email || !address || !city || !state || !zipCode) {
+  if (!fullName || !email || !address || !city || !state || !zipCode||!phone) {
     throw new ApiError(400, "All fields are required");
   }
 

@@ -75,7 +75,7 @@ const createOrder = AsyncHandler(async (req, res) => {
     try {
       // Fetpoch all orders for the specified user
       const orders = await Order.find({ user: userId })
-        // .pulate("user", "name email") // Populate user fields if needed
+        .populate("user","-password ") // Populate user fields if needed
         // .populate("shippingAddress") // Populate the shipping address
         // .populate("products.productId", "name price image"); // Populate product details
   
