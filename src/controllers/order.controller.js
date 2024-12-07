@@ -32,15 +32,15 @@ const createOrder = AsyncHandler(async (req, res) => {
     }
 
     // Step 4: Validate product details
-    console.log("Validation passed");
+    // console.log("Validation passed");
 
     // Step 2: Fetch product details from the database
     const productDetails = await Promise.all(
       products.map(async (item) => {
-        console.log(`Fetching details for productId: ${item.productId}`);
+        // console.log(`Fetching details for productId: ${item.productId}`);
         const product = await Product.findById(item.productId);
         if (!product) {
-          console.error(`Product not found: ${item.productId}`);
+          // console.error(`Product not found: ${item.productId}`);
           throw new ApiError(404, `Product not found: ${item.productId}`);
         }
         return {
@@ -57,7 +57,7 @@ const createOrder = AsyncHandler(async (req, res) => {
       })
     );
 
-    console.log("Product details fetched:", productDetails);
+    // console.log("Product details fetched:", productDetails);
 
     // Step 3: Calculate total amount
     const totalAmount = productDetails.reduce(
@@ -65,7 +65,7 @@ const createOrder = AsyncHandler(async (req, res) => {
       0
     );
 
-    console.log("Total amount calculated:", totalAmount);
+    // console.log("Total amount calculated:", totalAmount);
 
     // Step 4: Create the order
     const order = new Order({
@@ -77,7 +77,7 @@ const createOrder = AsyncHandler(async (req, res) => {
     });
 
     await order.save();
-    console.log("Order created successfully:", order);
+    // console.log("Order created successfully:", order);
 
     res
       .status(200)
