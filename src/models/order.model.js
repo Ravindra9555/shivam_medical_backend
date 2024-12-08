@@ -38,6 +38,7 @@ const orderSchema = new Schema(
     },
     trackingNumber: { type: String },
     paymentDetails: { type: Object, default: null },
+    
   },
   { timestamps: true }
 );

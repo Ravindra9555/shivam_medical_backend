@@ -114,7 +114,7 @@
     const activeDoctors = await DoctorMaster.find({ isActive: true });
   
     // Log for debugging
-    console.log("Active Doctors: ", activeDoctors);
+    // console.log("Active Doctors: ", activeDoctors);
   
     if (activeDoctors.length === 0) {
       throw new ApiError(404, "No active doctor found");

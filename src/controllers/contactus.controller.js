@@ -7,7 +7,7 @@ import { sendMail } from "../utils/send.email.js";
 
 const contactUs = AsyncHandler(async (req, res) => {
   const { firstName, lastName, phone, email, message } = req.body;
- console.log(req.body);
+//  console.log(req.body);
   // Check if all required fields are present
   if (!firstName || !lastName || !phone || !email || !message) {
     throw new ApiError(400, "All fields are required");

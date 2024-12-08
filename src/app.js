@@ -28,12 +28,9 @@ app.use(express.static("public"));
 var instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEYID,
   key_secret: process.env.RAZORPAY_SECRET,
-  // headers: {
-  //   "X-Razorpay-Account": "<merchant_account_id>"
-  // }
 });
 
-instance.orders.all().then(console.log).catch(console.error);
+// instance.orders.all().then(console.log).catch(console.error);
 
 app.get("/", (req, res) => {
   res.json(new ApiResponse(200, "success", "Api is working fine "));
@@ -47,7 +44,6 @@ import AppointmentRoutes from "./routes/appointment.routes.js";
 import ProductsRoutes from "./routes/product.routes.js";
 import AIroutes  from "./routes/AI.routes.js";
 import orderRoutes from "./routes/order.routes.js";
-import paymentRoutes from "./routes/payment.routes.js";
 app.use("/v1/api/admin", adminRoutes);
 app.use("/v1/api/users", userRoutes);
 app.use("/v1/api/contact", ContactUs);
@@ -56,8 +52,7 @@ app.use("/v1/api/appointment", AppointmentRoutes);
 app.use("/v1/api/product", ProductsRoutes);
 app.use("/v1/api/googleai", AIroutes);
 app.use("/v1/api/order", orderRoutes);
-app.use("/v1/api/payment", paymentRoutes);
 
 
 app.use(errorHandler);
-export { app };
+export { app , instance};
