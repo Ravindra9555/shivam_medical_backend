@@ -6,6 +6,7 @@ import { Order } from "../models/order.model.js";
 import { User } from "../models/user.model.js";
 import { instance } from "../app.js";
 import crypto from "crypto";
+import mongoose from "mongoose";
 const createOrder = AsyncHandler(async (req, res) => {
   try {
     console.log("Request body received:", req.body); // Log request payload
@@ -238,11 +239,32 @@ const deleteOrder = AsyncHandler(async (req, res) => {
     res.status(500).json({ message: "Error deleting order", error });
   }
 });
+const getOrderById = AsyncHandler(async (req, res) => {
+  const { orderId } = req.body;
+  
+  // Validate orderId
+  if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
+    throw new ApiError(400, "Please send a valid order ID");
+  }
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      throw new ApiError(404, "Order not found");
+    }
+
+    res.status(200).json(new ApiResponse(200, "Order fetched successfully", order));
+  } catch (error) {
+    res.status(error.statusCode || 500).json(new ApiResponse(500, error.message || "Something Went Wrong"));
+  }
+});
+
 export {
   createOrder,
   getAllOrderByuserId,
   getAllOrder,
   deleteOrder,
   verifypayment,
-  setlePayment
+  setlePayment,
+  getOrderById
 };
