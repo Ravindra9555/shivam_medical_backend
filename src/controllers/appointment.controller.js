@@ -76,7 +76,7 @@ const getAllAppointmentbyUserId = AsyncHandler(async (req, res) => {
 // Get all appointments with a specific date for admin
 const getAllAppointmentsByDate = AsyncHandler(async (req, res) => {
   const { date } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
   // Check if date is provided
   if (!date) {
     throw new ApiError(400, "Date is required");

@@ -44,6 +44,7 @@ import AppointmentRoutes from "./routes/appointment.routes.js";
 import ProductsRoutes from "./routes/product.routes.js";
 import AIroutes  from "./routes/AI.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import Dashboard  from "./routes/dashbaord.js"
 app.use("/v1/api/admin", adminRoutes);
 app.use("/v1/api/users", userRoutes);
 app.use("/v1/api/contact", ContactUs);
@@ -52,6 +53,7 @@ app.use("/v1/api/appointment", AppointmentRoutes);
 app.use("/v1/api/product", ProductsRoutes);
 app.use("/v1/api/googleai", AIroutes);
 app.use("/v1/api/order", orderRoutes);
+app.use("/v1/api/dashbaord", Dashboard);
 
 
 app.use(errorHandler);
